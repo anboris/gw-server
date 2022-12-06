@@ -1,0 +1,10 @@
+--- my.cnf      2022-12-03 02:30:59.952482000 +0300
++++ my.cnf      2022-12-03 02:30:32.541157000 +0300
+@@ -7,7 +7,6 @@
+ no_auto_rehash
+
+ [mysqld]
+-sql-mode                        = "NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+ user                            = mysql
+ port                            = 3306
+ socket                          = /tmp/mysql.sock

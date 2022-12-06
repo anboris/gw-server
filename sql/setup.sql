@@ -1,0 +1,6 @@
+ALTER USER 'root'@'localhost' IDENTIFIED BY '1234';
+SET PASSWORD = PASSWORD('1234');
+CREATE USER 'simpla'@'localhost' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON * . * TO 'simpla'@'localhost';
+CREATE DATABASE simpla;
+FLUSH PRIVILEGES;

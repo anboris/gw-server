@@ -1,0 +1,14 @@
+rsync
+doas
+mod_php74
+php74-mysqli
+php74-gd
+php74-pdo
+php74-pdo_mysql
+php74-zlib
+php74-iconv
+php74-session
+php74-json
+apache24
+mysql57-client
+mysql57-server
