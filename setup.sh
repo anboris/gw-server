@@ -66,8 +66,11 @@ service mysql-server restart
 # Misc
 
 mkdir -p /usr/local/www/apache24/data/simpla/design/compiled
+mkdir -p /usr/local/www/apache24/data/compiled
 chown -R admin:www /usr/local/www/apache24/data
 find /usr/local/www/apache24/data -type f | xargs chmod -v 644
 find /usr/local/www/apache24/data -type d | xargs chmod -v 755
 chmod 755 /usr/local/www/apache24/data
 chmod 777 /usr/local/www/apache24/data/simpla/design/compiled/
+chmod 777 /usr/local/www/apache24/data/simpla/design/
+chmod 777 /usr/local/www/apache24/data/compiled/
