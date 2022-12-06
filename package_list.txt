@@ -10,5 +10,5 @@ php74-iconv
 php74-session
 php74-json
 apache24
-mysql57-client
-mysql57-server
+mariadb105-server
+mariadb105-client

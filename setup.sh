@@ -35,11 +35,6 @@ service apache24 status
 
 # Setup MySQL
 
-patch /usr/local/etc/mysql/my.cnf < ./patch/my.cnf.patch
-
-printf "%s " "Press enter to continue"
-read ans
-
 sysrc mysql_enable=YES
 service mysql-server start
 
@@ -53,15 +48,17 @@ service mysql-server status
 printf "%s " "Press enter to continue"
 read ans
 
-/usr/local/bin/mysql -u root -p --connect-expired-password < ./sql/setup.sql
+/usr/local/bin/mysql -u root -p < ./sql/setup.sql
 
 printf "%s " "Press enter to continue"
 read ans
 
-/usr/local/bin/mysql -u root -p simpla --connect-expired-password < ./sql/simpla.sql
+/usr/local/bin/mysql -u root -p simpla < ./sql/simpla.sql
 
 printf "%s " "Press enter to continue"
 read ans
+
+sysrc mysql_args="--bind-address=0.0.0.0"
 
 service mysql-server restart
 
