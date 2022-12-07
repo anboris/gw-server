@@ -63,63 +63,54 @@ set_permissions()
 	find /usr/local/www/apache24/data -type d | xargs chmod -v 755
 
 	chmod 755 /usr/local/www/apache24/data
+	chmod 777 /usr/local/www/apache24/data/design/
 	chmod 777 /usr/local/www/apache24/data/compiled/
 	chmod 777 /usr/local/www/apache24/data/simpla/design/
 	chmod 777 /usr/local/www/apache24/data/simpla/design/compiled/
 }
 
-printf '\n%s\n' ':: Update FreeBSD system (y/N)? '
-read answer
-
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Update FreeBSD system? [y/N]: ' opt
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	system_update
 fi
 
-printf '\n%s\n' ':: Install packages (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Install packages? [y/N]: '
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	install_packages
 fi
 
-printf '\n%s\n' ':: Add administrator user and setup privileges (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Add administrator user and setup privileges? [y/N]: '
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	add_user
 fi
 
-printf '\n%s\n' ':: Setup PHP (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Setup PHP? [y/N]: '
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	setup_php
 fi
+read -p ':: Patch Apache configuration file? [y/N]: '
 
-printf '\n%s\n' ':: Patch Apache configuration file (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	patch_apache	
 fi
 
-printf '\n%s\n' ':: Enable and start Apache (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Enable and start Apache? [y/N]: '
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	setup_apache
 fi
 
-printf '\n%s\n' ':: Setup  MySQL (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Setup  MySQL? [y/N]: '
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	setup_mysql
 fi
 
-printf '\n%s\n' ':: Import database schema (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Import database schema? [y/N]: '
+if [ "$opt" != "${opt#[Yy]}" ] ; then
 	import_schema
 fi
 
-printf '\n%s\n' ':: Set (repair) file and folder permissions (y/N)? '
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ; then
+read -p ':: Set (repair) file and folder permissions? [y/N]: '
+if [ "$opt" != "${opt#[Yy]}" ]   ; then
 	set_permissions
 fi
 
