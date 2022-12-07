@@ -12,6 +12,7 @@ install_packages() {
 add_user() {
   pw user add -n admin -c 'Administrator' -d /usr/admin -G wheel -m -s /bin/tcsh
   echo "permit persist :wheel as root" >/usr/local/etc/doas.conf
+  passwd admin
 }
 
 setup_php() {
@@ -65,42 +66,42 @@ if [ "$opt" != "${opt#[Yy]}" ]; then
   system_update
 fi
 
-read -p ':: Install packages? [y/N]: '
+read -p ':: Install packages? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   install_packages
 fi
 
-read -p ':: Add administrator user and setup privileges? [y/N]: '
+read -p ':: Add administrator user and setup privileges? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   add_user
 fi
 
-read -p ':: Setup PHP? [y/N]: '
+read -p ':: Setup PHP? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   setup_php
 fi
 
-read -p ':: Patch Apache configuration file? [y/N]: '
+read -p ':: Patch Apache configuration file? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   patch_apache
 fi
 
-read -p ':: Enable and start Apache? [y/N]: '
+read -p ':: Enable and start Apache? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   setup_apache
 fi
 
-read -p ':: Setup  MySQL? [y/N]: '
+read -p ':: Setup  MySQL? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   setup_mysql
 fi
 
-read -p ':: Import database schema? [y/N]: '
+read -p ':: Import database schema? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   import_schema
 fi
 
-read -p ':: Set (repair) file and folder permissions? [y/N]: '
+read -p ':: Set (repair) file and folder permissions? [y/N]: ' opt
 if [ "$opt" != "${opt#[Yy]}" ]; then
   set_permissions
 fi
