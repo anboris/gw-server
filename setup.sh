@@ -1,76 +1,126 @@
-#!/bin/tcsh -f
+#!/bin/sh
 
-# Update system
+system_update()
+{
+	freebsd-update fetch install
+}
 
-freebsd-update fetch install
-pkg update && pkg upgrade -y
+install_packages()
+{
+	pkg update && pkg upgrade -y
+	cat ./package_list.txt | xargs pkg install -y
+}
 
-# Install packages
+add_user()
+{
+	pw user add -n admin -c 'Administrator' -d /usr/admin -G wheel -m -s /bin/tcsh
+	echo "permit persist :wheel as root" > /usr/local/etc/doas.conf
+}
 
-cat ./package_list.txt | xargs pkg install -y
+setup_php()
+{
+	cp /usr/local/etc/php.ini-development /usr/local/etc/php.ini
+}
 
-# Setup user and privileges
+patch_apache()
+{
+	patch /usr/local/etc/apache24/httpd.conf < ./patch/httpd.conf.patch
+}
 
-pw user add -n admin -c 'Administrator' -d /usr/admin -G wheel -m -s /bin/tcsh
-echo "permit persist :wheel as root" > /usr/local/etc/doas.conf
+setup_apache()
+{
+	sysrc apache24_enable=YES
+	service apache24 start
+	service apache24 status
+}
 
-# Setup PHP
+setup_mysql()
+{
+	sysrc mysql_enable=YES
+	sysrc mysql_args="--bind-address=0.0.0.0"
+	service mysql-server start
+	service mysql-server status
 
-cp /usr/local/etc/php.ini-development /usr/local/etc/php.ini
+	/usr/local/bin/mysql_secure_installation
+}
 
-# Setup Apache
+import_schema()
+{
+	/usr/local/bin/mysql -u root -p < ./sql/setup.sql
+	/usr/local/bin/mysql -u root -p simpla < ./sql/simpla.sql
 
-patch /usr/local/etc/apache24/httpd.conf < ./patch/httpd.conf.patch
+	service mysql-server restart
+}
 
-printf "%s " "Press enter to continue"
-read ans
+set_permissions()
+{
+	mkdir -p /usr/local/www/apache24/data/compiled
+	mkdir -p /usr/local/www/apache24/data/simpla/design/compiled
+	
+	chown -R admin:www /usr/local/www/apache24/data
 
-sysrc apache24_enable=YES
-service apache24 start
+	find /usr/local/www/apache24/data -type f | xargs chmod -v 644
+	find /usr/local/www/apache24/data -type d | xargs chmod -v 755
 
-printf "%s " "Press enter to continue"
-read ans
+	chmod 755 /usr/local/www/apache24/data
+	chmod 777 /usr/local/www/apache24/data/compiled/
+	chmod 777 /usr/local/www/apache24/data/simpla/design/
+	chmod 777 /usr/local/www/apache24/data/simpla/design/compiled/
+}
 
-service apache24 status
+printf '\n%s\n' ':: Update FreeBSD system (y/N)? '
+read answer
 
-# Setup MySQL
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	system_update
+fi
 
-sysrc mysql_enable=YES
-service mysql-server start
+printf '\n%s\n' ':: Install packages (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	install_packages
+fi
 
-printf "%s " "Press enter to continue"
-read ans
+printf '\n%s\n' ':: Add administrator user and setup privileges (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	add_user
+fi
 
-service mysql-server status
+printf '\n%s\n' ':: Setup PHP (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	setup_php
+fi
 
-/usr/local/bin/mysql_secure_installation
+printf '\n%s\n' ':: Patch Apache configuration file (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	patch_apache	
+fi
 
-printf "%s " "Press enter to continue"
-read ans
+printf '\n%s\n' ':: Enable and start Apache (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	setup_apache
+fi
 
-/usr/local/bin/mysql -u root -p < ./sql/setup.sql
+printf '\n%s\n' ':: Setup  MySQL (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	setup_mysql
+fi
 
-printf "%s " "Press enter to continue"
-read ans
+printf '\n%s\n' ':: Import database schema (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	import_schema
+fi
 
-/usr/local/bin/mysql -u root -p simpla < ./sql/simpla.sql
+printf '\n%s\n' ':: Set (repair) file and folder permissions (y/N)? '
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ; then
+	set_permissions
+fi
 
-printf "%s " "Press enter to continue"
-read ans
-
-sysrc mysql_args="--bind-address=0.0.0.0"
-
-service mysql-server restart
-
-
-# Misc
-
-mkdir -p /usr/local/www/apache24/data/simpla/design/compiled
-mkdir -p /usr/local/www/apache24/data/compiled
-chown -R admin:www /usr/local/www/apache24/data
-find /usr/local/www/apache24/data -type f | xargs chmod -v 644
-find /usr/local/www/apache24/data -type d | xargs chmod -v 755
-chmod 755 /usr/local/www/apache24/data
-chmod 777 /usr/local/www/apache24/data/simpla/design/compiled/
-chmod 777 /usr/local/www/apache24/data/simpla/design/
-chmod 777 /usr/local/www/apache24/data/compiled/
+printf '\n%s\n' ':: All done!'
